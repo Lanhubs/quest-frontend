@@ -43,14 +43,17 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           {routeConfig
-            .filter((route) => route.isLazy && route.component)
-            .map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<route.component />}
-              />
-            ))}
+            .filter((route): route is typeof route & { component: NonNullable<typeof route.component> } => route.isLazy && !!route.component)
+            .map((route) => {
+              const Component = route.component;
+              return (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={<Component />}
+                />
+              );
+            })}
           <Route
             path="*"
             element={

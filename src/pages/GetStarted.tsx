@@ -1,7 +1,7 @@
-export function GetStarted() {
+export default function GetStarted() {
   return (
     <div className="text-black flex justify-center">
-      <h2>Ge Started</h2>
+      <h2>Get Started</h2>
     </div>
   );
 }

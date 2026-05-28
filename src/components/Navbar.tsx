@@ -1,11 +1,15 @@
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getNavItems } from '../config/routes';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navItems = getNavItems('main');
+
+  const mobileMenuId = useId();
+  const navigate = useNavigate();
+  const handleLogout = () => { navigate('/sign-in'); };
 
   return (
     <nav className="relative " aria-label="Primary">
