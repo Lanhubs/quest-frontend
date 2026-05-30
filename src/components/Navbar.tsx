@@ -1,12 +1,21 @@
 import { useState, useId } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router-dom"; // Fixed: Added missing 'Link' import
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { AuthService } from "../services/AuthService";
 import { getNavItems } from '../config/routes';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const mobileMenuId = useId(); // Fixed: Generated missing unique ID identifier
   const navItems = getNavItems('main');
+  const navigate = useNavigate();
+  const mobileMenuId = useId();
+
+  const handleLogout = () => {
+    AuthService.logout();
+    navigate("/signin");
+  };
 
   // Fixed: Added missing logout handler method stub
   const handleLogout = () => {
