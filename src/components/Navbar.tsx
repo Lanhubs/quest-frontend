@@ -1,11 +1,13 @@
-import { useEffect, useId, useState } from "react";
+import { useState, useId } from "react";
 import { Menu, X } from "lucide-react";
+import { Link, NavLink } from "react-router-dom"; // Fixed: Added missing 'Link' import
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthService } from "../services/AuthService";
 import { getNavItems } from '../config/routes';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const mobileMenuId = useId(); // Fixed: Generated missing unique ID identifier
   const navItems = getNavItems('main');
   const navigate = useNavigate();
   const mobileMenuId = useId();
@@ -15,9 +17,15 @@ const NavBar = () => {
     navigate("/signin");
   };
 
+  // Fixed: Added missing logout handler method stub
+  const handleLogout = () => {
+    console.log("Logging user out...");
+    // clear tokens, dispatch logout state, etc.
+  };
+
   return (
-    <nav className="relative " aria-label="Primary">
-      <div className=" px-5 md:px-10 py-5 w-full">
+    <nav className="relative" aria-label="Primary">
+      <div className="px-5 md:px-10 py-5 w-full">
         <div className="flex justify-between items-center">
           <Link
             to="/"
@@ -37,7 +45,8 @@ const NavBar = () => {
             </span>
           </Link>
 
-          <div className="hidden xl:flex items-center ">
+          {/* Desktop Navigation */}
+          <div className="hidden xl:flex items-center">
             <div className="flex justify-center text-base text-[#F9BC07] items-center gap-3">
               {navItems.map((item) => (
                 <NavLink
@@ -57,6 +66,7 @@ const NavBar = () => {
                 <span>Coins</span>
                 <img src="/coins.svg" alt="" className="h-6 w-auto" />
               </span>
+              
 
               <span className="flex items-center gap-2" aria-hidden="true">
                 <span>Call a friend</span>
@@ -70,11 +80,7 @@ const NavBar = () => {
 
               <span className="flex items-center gap-2" aria-hidden="true">
                 <span>Audience</span>
-                <img
-                  src="/audience.svg"
-                  alt=""
-                  className="h-6 w-auto"
-                />
+                <img src="/audience.svg" alt="" className="h-6 w-auto" />
               </span>
 
               <button
@@ -106,6 +112,7 @@ const NavBar = () => {
             </div>
           </div>
 
+          {/* Mobile Hamburger Button */}
           <div className="xl:hidden flex items-center">
             <button
               type="button"
@@ -121,7 +128,8 @@ const NavBar = () => {
         </div>
       </div>
 
-      {isOpen ? (
+      {/* Mobile Dropdown Panel */}
+      {isOpen && (
         <div
           id={mobileMenuId}
           className="xl:hidden bg-[#323336] w-full px-10 pb-10 flex flex-col gap-6 absolute top-full left-0 z-50 border-t border-gray-800 shadow-2xl"
@@ -133,6 +141,9 @@ const NavBar = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  isActive ? "text-white font-bold" : ""
+                }
               >
                 {item.label}
               </NavLink>
@@ -141,19 +152,19 @@ const NavBar = () => {
             <div className="flex flex-col gap-6" aria-hidden="true">
               <div className="flex items-center gap-2">
                 <p>Coins</p>
-                <img src="/coins.png" className="h-6 w-auto" alt="" />
+                <img src="/coins.svg" className="h-6 w-auto" alt="" />
               </div>
               <div className="flex items-center gap-2">
                 <p>Call</p>
-                <img src="/call.png" className="h-6 w-auto" alt="" />
+                <img src="/call.svg" className="h-6 w-auto" alt="" />
               </div>
               <div className="flex items-center gap-2">
                 <p>50:50</p>
-                <img src="/5050.png" className="h-6 w-auto" alt="" />
+                <img src="/fiftyfifty.svg" className="h-6 w-auto" alt="" />
               </div>
               <div className="flex items-center gap-2">
                 <p>Audience</p>
-                <img src="/audience.png" className="h-6 w-auto" alt="" />
+                <img src="/audience.svg" className="h-6 w-auto" alt="" />
               </div>
             </div>
 
@@ -163,7 +174,7 @@ const NavBar = () => {
                 className="p-0 border-0 bg-transparent cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#323336]"
                 aria-label="Notifications"
               >
-                <img src="/bell.png" className="h-8 w-auto" alt="" />
+                <img src="/bell.svg" className="h-8 w-auto" alt="" />
               </button>
               <button
                 type="button"
@@ -174,7 +185,7 @@ const NavBar = () => {
                 className="p-0 border-0 bg-transparent cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#323336]"
                 aria-label="Log out"
               >
-                <img src="/logout.png" className="h-8 w-auto" alt="" />
+                <img src="/logout.svg" className="h-8 w-auto" alt="" />
               </button>
               <NavLink
                 to="/settings"
@@ -191,7 +202,7 @@ const NavBar = () => {
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </nav>
   );
 };

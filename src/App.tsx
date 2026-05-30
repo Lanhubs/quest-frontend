@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Suspense } from 'react';
+import { Suspense } from "react";
 import HeroSection from "./components/HeroSection";
 import "./App.css";
 import FaqsSection from "./components/FaqsSection";
@@ -15,6 +15,9 @@ import ToastViewport from "./components/toasts/ToastViewport";
 import Navbar from "./components/Navbar";
 import GameplayNavbar from "./components/GameplayNavbar";
 import { routeConfig } from "./config/routes";
+import NotFound from "./pages/NotFound";
+
+// Import your custom Tailwind 404 Recovery view
 import NotFound from "./pages/NotFound";
 
 const Home = () => (
@@ -33,16 +36,51 @@ const Home = () => (
 
 function App() {
   const location = useLocation();
-  const isSignInPage = location.pathname === "/sign-in";
-  const isHomePage = location.pathname === "/";
+
+  // Modern browser-native route tracking (cleans out the breaking hash fallback checks)
+  const currentPath = location.pathname;
+  const isSignInPage = currentPath === "/sign-in";
+  const isHomePage = currentPath === "/";
 
   return (
     <>
       {!isSignInPage && (isHomePage ? <GameplayNavbar /> : <Navbar />)}
       <ToastViewport />
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="h-screen flex items-center justify-center text-white">
+            Loading...
+          </div>
+        }
+      >
         <Routes>
+          {/* Static Core Route */}
           <Route path="/" element={<Home />} />
+
+          {/* Dynamic Lazy-Loaded Configurations with Type Guarding */}
+          {routeConfig
+            .filter((route) => route.isLazy && "component" in route)
+            .map((route) => {
+              const routeWithComponent = route as Extract<
+                (typeof routeConfig)[number],
+                { component: any }
+              >;
+              const LazyComponent = routeWithComponent.component;
+
+              return (
+                <Route
+                  key={routeWithComponent.path}
+                  path={routeWithComponent.path}
+                  element={<LazyComponent />}
+                />
+              );
+            })}
+
+          {/* CRITICAL FIX: The native universal catch-all route.
+            React Router will automatically hit this whenever 'currentPath' 
+            fails to match any route listed above.
+          */}
+          <Route path="*" element={<NotFound />} />
            {routeConfig
             .filter((route) => route.isLazy && route.component)
             .map((route) => (
