@@ -1,4 +1,16 @@
 import { lazy } from 'react';
+import type { ComponentType } from 'react';
+
+type NavType = 'landing' | 'main';
+
+interface RouteConfig {
+  path: string;
+  label: string;
+  showInNav: boolean;
+  navType?: NavType;
+  isLazy: boolean;
+  component?: ComponentType;
+}
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import('../pages/auth/SignIn'));
@@ -10,7 +22,7 @@ const GameMode = lazy(() => import('../pages/GameMode'));
 
 // Route configuration with metadata
 // Note: Home component is defined inline in App.tsx, so it's not lazy-loaded
-export const routeConfig = [
+export const routeConfig: RouteConfig[] = [
   {
     path: '/',
     label: 'Home',
@@ -63,10 +75,10 @@ export const routeConfig = [
     navType: 'main',
     isLazy: true,
   },
-] as const;
+];
 
 // Helper to get navigation items by navbar type
-export const getNavItems = (navType: 'landing' | 'main' | 'both' = 'both') =>
+export const getNavItems = (navType: NavType | 'both' = 'both') =>
   routeConfig.filter(
     (route) =>
       route.showInNav &&

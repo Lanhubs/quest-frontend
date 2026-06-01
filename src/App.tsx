@@ -34,7 +34,6 @@ const Home = () => (
 function App() {
   const location = useLocation();
 
-  // Modern browser-native route tracking (cleans out the breaking hash fallback checks)
   const currentPath = location.pathname;
   const isSignInPage = currentPath === "/sign-in";
   const isHomePage = currentPath === "/";
@@ -51,32 +50,20 @@ function App() {
         }
       >
         <Routes>
-          {/* Static Core Route */}
           <Route path="/" element={<Home />} />
-
-          {/* Dynamic Lazy-Loaded Configurations with Type Guarding */}
           {routeConfig
             .filter((route) => route.isLazy && "component" in route)
             .map((route) => {
-              const routeWithComponent = route as Extract<
-                (typeof routeConfig)[number],
-                { component: any }
-              >;
-              const LazyComponent = routeWithComponent.component;
-
+              const LazyComponent = (route as { component: React.ComponentType; path: string }).component;
+              const routePath = (route as { path: string }).path;
               return (
                 <Route
-                  key={routeWithComponent.path}
-                  path={routeWithComponent.path}
+                  key={routePath}
+                  path={routePath}
                   element={<LazyComponent />}
                 />
               );
             })}
-
-          {/* CRITICAL FIX: The native universal catch-all route.
-            React Router will automatically hit this whenever 'currentPath' 
-            fails to match any route listed above.
-          */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

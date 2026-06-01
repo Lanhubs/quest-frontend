@@ -15,8 +15,6 @@ const NavBar = () => {
     navigate("/sign-in");
   };
 
-
-  // Scroll anchors remain separate (they're not routes)
   const scrollMenu = [
     { name: "How to Play", link: "#how-to-play" },
     { name: "About", link: "#about" },
@@ -56,7 +54,6 @@ const NavBar = () => {
                 </ScrollLink>
               ))}
 
-              {/* Game-specific items */}
               <Link
                 to="/store"
                 className="flex items-center gap-2 rounded-sm px-2 py-1 text-[#F9BC07] hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#01100F]"
