@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Suspense } from 'react';
+import { Suspense } from "react";
 import HeroSection from "./components/HeroSection";
 import "./App.css";
 import FaqsSection from "./components/FaqsSection";
@@ -15,6 +15,7 @@ import ToastViewport from "./components/toasts/ToastViewport";
 import Navbar from "./components/Navbar";
 import GameplayNavbar from "./components/GameplayNavbar";
 import { routeConfig } from "./config/routes";
+import NotFound from "./pages/NotFound";
 
 const Home = () => (
   <>
@@ -32,36 +33,38 @@ const Home = () => (
 
 function App() {
   const location = useLocation();
-  const isSignInPage = location.pathname === "/sign-in";
-  const isHomePage = location.pathname === "/";
+
+  const currentPath = location.pathname;
+  const isSignInPage = currentPath === "/sign-in";
+  const isHomePage = currentPath === "/";
 
   return (
     <>
       {!isSignInPage && (isHomePage ? <GameplayNavbar /> : <Navbar />)}
       <ToastViewport />
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="h-screen flex items-center justify-center text-white">
+            Loading...
+          </div>
+        }
+      >
         <Routes>
           <Route path="/" element={<Home />} />
           {routeConfig
-            .filter((route): route is typeof route & { component: NonNullable<typeof route.component> } => route.isLazy && !!route.component)
+            .filter((route) => route.isLazy && "component" in route)
             .map((route) => {
-              const Component = route.component;
+              const LazyComponent = (route as { component: React.ComponentType; path: string }).component;
+              const routePath = (route as { path: string }).path;
               return (
                 <Route
-                  key={route.path}
-                  path={route.path}
-                  element={<Component />}
+                  key={routePath}
+                  path={routePath}
+                  element={<LazyComponent />}
                 />
               );
             })}
-          <Route
-            path="*"
-            element={
-              <div className="h-screen flex items-center justify-center text-white text-2xl">
-                404 — Page Not Found
-              </div>
-            }
-          />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </>
