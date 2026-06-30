@@ -1,11 +1,10 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Suspense } from "react";
 import "./App.css";
 import ToastViewport from "./components/toasts/ToastViewport";
 import Navbar from "./components/Navbar";
 import GameplayNavbar from "./components/GameplayNavbar";
-import { routeConfig } from "./config/routes";
-import NotFound from "./pages/NotFound";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   const location = useLocation();
@@ -28,21 +27,7 @@ function App() {
           </div>
         }
       >
-        <Routes>
-          {routeConfig.map((route) => {
-            const Component = route.element;
-            return (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<Component />}
-              />
-            );
-          })}
-
-          {/* Catch-all route for undefined paths */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
       </Suspense>
     </>
   );
