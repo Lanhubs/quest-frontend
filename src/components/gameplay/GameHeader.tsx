@@ -7,12 +7,50 @@ import audience from '../../assets/images/pngs/audience.png';
 import bell from '../../assets/images/pngs/bell.png';
 import avatar from '../../assets/images/pngs/avatar.png';
 
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks';
+import { addNotification } from '../../features/notifications/notificationsSlice';
+import { decrementLifeline } from '../../features/lifelines/lifelinesSlice';
 
 const navItemClass =
   'hover:text-white transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]';
 
 const GameHeader = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleNotificationClick = () => {
+    dispatch(
+      addNotification({
+        type: 'info',
+        title: 'Notifications',
+        message: 'No new notifications',
+      }),
+    );
+  };
+
+  const handleExitClick = () => {
+    dispatch(
+      addNotification({
+        type: 'warning',
+        title: 'Exit Game',
+        message: 'Your progress will be lost if you exit now',
+      }),
+    );
+    navigate('/');
+  };
+
+  const handleLifelineClick = (lifelineType: 'callAFriend' | 'fiftyFifty' | 'audience', name: string) => {
+    dispatch(decrementLifeline(lifelineType));
+    dispatch(
+      addNotification({
+        type: 'info',
+        title: `${name} Used`,
+        message: `You have used your ${name} lifeline`,
+      }),
+    );
+  };
+
   return (
     <header className="flex items-center justify-between bg-[#0a0a0a] px-8 py-4 text-white border-b border-gray-800">
       <Link
@@ -40,30 +78,46 @@ const GameHeader = () => {
         </NavLink>
       </nav>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-6" role="group" aria-label="Game status and lifelines">
         <div className="flex items-center gap-2" aria-hidden="true">
           <span className="text-[#d4af37] text-sm font-medium">Coins</span>
           <img src={coinsIcon} alt="" className="w-10 h-10" />
         </div>
 
-        <div className="flex items-center gap-2" aria-hidden="true">
+        <button
+          type="button"
+          onClick={() => handleLifelineClick('callAFriend', 'Call a Friend')}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+          aria-label="Call a friend lifeline"
+        >
           <span className="text-[#d4af37] text-sm font-medium whitespace-nowrap">Call a friend</span>
           <img src={callAFriend} alt="" className="w-10 h-10" />
-        </div>
+        </button>
 
-        <div className="flex items-center gap-2" aria-hidden="true">
+        <button
+          type="button"
+          onClick={() => handleLifelineClick('fiftyFifty', '50:50')}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+          aria-label="50:50 lifeline"
+        >
           <span className="text-sm font-medium">50 : 50</span>
           <img src={fiftyFifty} alt="" className="w-10 h-10" />
-        </div>
+        </button>
 
-        <div className="flex items-center gap-2" aria-hidden="true">
+        <button
+          type="button"
+          onClick={() => handleLifelineClick('audience', 'Audience')}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+          aria-label="Audience lifeline"
+        >
           <span className="text-[#d4af37] text-sm font-medium">Audience</span>
           <img src={audience} alt="" className="w-10 h-10" />
-        </div>
+        </button>
 
         <div className="flex items-center gap-4 ml-4 border-l border-gray-700 pl-4">
           <button
             type="button"
+            onClick={handleNotificationClick}
             className="p-0 border-0 bg-transparent cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
             aria-label="Notifications"
           >
@@ -71,6 +125,7 @@ const GameHeader = () => {
           </button>
           <button
             type="button"
+            onClick={handleExitClick}
             className="p-0 border-0 bg-transparent cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9BC07] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
             aria-label="Exit"
           >
